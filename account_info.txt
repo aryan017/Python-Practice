@@ -1,0 +1,2 @@
+accountName : kim_minji, accountPassword : 123
+accountName : kim_Hanni, accountPassword : 123
