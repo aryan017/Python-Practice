@@ -1,3 +1,4 @@
+import random
 import curses
 from curses import wrapper
 import time
@@ -9,6 +10,11 @@ def start_screen(stdscr):
     stdscr.refresh()
     stdscr.getkey()
  
+def load_input_text():
+    with open('file.txt','r') as f :
+        lines=f.readlines()
+        return random.choice(lines).strip()
+
 def display_text(stdscr,current_text,target_text,wpm=0):
     stdscr.addstr(target_text)
     stdscr.addstr(1,0,f"WPM:{wpm}")
@@ -21,7 +27,8 @@ def display_text(stdscr,current_text,target_text,wpm=0):
         stdscr.addstr(0,i,char,color)
        
 def wpm_test(stdscr):
-    target_text="In a world filled with countless distractions, the ability to focus on a single task is a powerful skill. As technol"
+    target_text=load_input_text()
+    target_text_update=target_text.split()
     current_text=[]
     wpm=0
     start_time=time.time()
@@ -33,6 +40,10 @@ def wpm_test(stdscr):
         stdscr.clear()
         display_text(stdscr,current_text,target_text,wpm)
         stdscr.refresh()
+        
+        if "".join(current_text)=="".join(target_text_update) :
+            stdscr.nodelay(False)
+            break
         
         try:
             key=stdscr.getkey()
@@ -48,7 +59,7 @@ def wpm_test(stdscr):
         elif len(current_text)<=len(target_text):
             current_text.append(key)
 
-    
+
 def main(stdscr):
     curses.init_pair(1,curses.COLOR_YELLOW,curses.COLOR_BLACK)
     curses.init_pair(2,curses.COLOR_RED,curses.COLOR_BLACK)
@@ -58,4 +69,12 @@ def main(stdscr):
     
     wpm_test(stdscr)
     
+    while True :
+        wpm_test(stdscr)
+        stdscr.addstr(2,0,"Welcome back You completed the text, Please Press any key to continue...")
+        key=stdscr.getkey()
+        
+        if ord(key)==27:
+            break
+        
 wrapper(main)
